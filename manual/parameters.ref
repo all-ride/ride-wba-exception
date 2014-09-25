@@ -1,0 +1,3 @@
+system.exception.path           Directory where the error reports will be written
+system.exception.recipient      Recipient for the error reporting mails
+system.exception.subject        Subject for the error reporting mails

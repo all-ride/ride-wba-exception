@@ -1,0 +1,67 @@
+{
+    "dependencies": [
+        {
+            "class": "ride\\library\\system\\file\\File",
+            "id": "exception",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.exception.path",
+                                "default": "%application%/data/exception"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ride\\web\\base\\service\\ExceptionService",
+            "calls": [
+                "setLog",
+                {
+                    "method": "setDirectory",
+                    "arguments": [
+                        {
+                            "name": "directory",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\File",
+                                "id": "exception"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "setRecipient",
+                    "arguments": [
+                        {
+                            "name": "recipient",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.exception.recipient"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "setSubject",
+                    "arguments": [
+                        {
+                            "name": "subject",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.exception.subject",
+                                "default": "An error occured"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
