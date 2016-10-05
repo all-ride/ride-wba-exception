@@ -72,4 +72,66 @@ class ExceptionController extends AbstractController {
         $form->processView($view);
     }
 
+    /**
+     * Action to set the error reporting settings
+     * @return null
+     */
+    public function settingsAction() {
+        $config = $this->getConfig();
+        $translator = $this->getTranslator();
+        $referer = $this->getReferer();
+
+        // build the form
+        $data = array(
+            'recipient' => $config->get('system.exception.recipient'),
+            'subject' => $config->get('system.exception.subject'),
+        );
+
+        $form = $this->createFormBuilder($data);
+        $form->addRow('recipient', 'email', array(
+            'label' => $translator->translate('label.recipient'),
+            'description' => $translator->translate('label.recipient.exception.description'),
+            'filters' => array(
+                'trim' => array(),
+            )
+        ));
+        $form->addRow('subject', 'email', array(
+            'label' => $translator->translate('label.subject'),
+            'description' => $translator->translate('label.subject.exception.description'),
+            'filters' => array(
+                'trim' => array(),
+            )
+        ));
+        $form = $form->build();
+
+        // handle the form
+        if ($form->isSubmitted()) {
+            try {
+                $form->validate();
+
+                $data = $form->getData();
+
+                $config->set('system.exception.recipient', $data['recipient'] == '' ? null : $data['recipient']);
+                $config->set('system.exception.subject', $data['subject'] == '' ? null : $data['subject']);
+
+                $this->addSuccess('success.preferences.saved');
+
+                if (!$referer) {
+                    $referer = $this->getUrl('system.exception');
+                }
+
+                $this->response->setRedirect($referer);
+
+                return;
+            } catch (ValidationException $exception) {
+                $this->setValidationException($exception, $form);
+            }
+        }
+
+        $this->setTemplateView('base/settings/exception', array(
+            'form' => $form->getView(),
+            'referer' => $referer,
+        ));
+    }
+
 }

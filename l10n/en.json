@@ -1,3 +1,8 @@
 {
-    "success.exception.report.sent": "Thank you for sending us your error report"
+    "label.recipient": "Recipient",
+    "label.recipient.exception.description": "Email address to send the error reports to",
+    "label.subject": "Subject",
+    "label.subject.exception.description": "Subject of the error report mails",
+    "success.exception.report.sent": "Thank you for sending us your error report",
+    "title.system.exception": "Error reporting"
 }
