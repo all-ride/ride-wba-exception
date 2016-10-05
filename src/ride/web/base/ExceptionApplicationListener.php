@@ -40,7 +40,7 @@ class ExceptionApplicationListener {
         $id = $service->writeReport($report);
 
         // dispatch to the exception route
-        $route = $web->getRouterService()->getRouteById('system.exception', array('id' => $id));
+        $route = $web->getRouterService()->getRouteById('exception', array('id' => $id));
         $route->setArguments(array('id' => $id));
         $route->setPredefinedArguments(array('report' => $report));
 

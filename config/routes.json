@@ -4,6 +4,13 @@
             "path": "/exception/%id%",
             "controller": "ride\\web\\base\\controller\\ExceptionController",
             "action": "indexAction",
+            "id": "exception",
+            "methods": ["GET", "HEAD", "POST"]
+        },
+        {
+            "path": "/admin/system/exception",
+            "controller": "ride\\web\\base\\controller\\ExceptionController",
+            "action": "settingsAction",
             "id": "system.exception",
             "methods": ["GET", "HEAD", "POST"]
         }
