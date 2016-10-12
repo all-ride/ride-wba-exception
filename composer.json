@@ -2,7 +2,7 @@
     "name": "ride/wba-exception",
     "description": "Error reporting for uncaught exceptions of the Ride framework",
     "license": "MIT",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "authors": [
         {
             "name": "Joris Vandeweerd",
