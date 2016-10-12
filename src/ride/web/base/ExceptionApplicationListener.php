@@ -5,6 +5,7 @@ namespace ride\web\base;
 use ride\library\event\Event;
 use ride\library\event\EventManager;
 use ride\library\http\Header;
+use ride\library\i18n\I18n;
 use ride\library\security\exception\UnauthorizedException;
 use ride\library\security\SecurityManager;
 
@@ -23,7 +24,7 @@ class ExceptionApplicationListener {
      * @param \ride\library\security\SecurityManager $securityManager
      * @return null
      */
-    public function handleException(Event $event, ExceptionService $service, SecurityManager $securityManager, EventManager $eventManager) {
+    public function handleException(Event $event, ExceptionService $service, SecurityManager $securityManager, EventManager $eventManager, I18n $i18n) {
         $exception = $event->getArgument('exception');
         if ($exception instanceof UnauthorizedException) {
             return;
@@ -33,6 +34,7 @@ class ExceptionApplicationListener {
         $web = $event->getArgument('web');
         $request = $web->getRequest();
         $response = $web->getResponse();
+        $locale = $i18n->getLocale();
         $user = $securityManager->getUser();
 
         // write report
@@ -40,9 +42,13 @@ class ExceptionApplicationListener {
         $id = $service->writeReport($report);
 
         // dispatch to the exception route
-        $route = $web->getRouterService()->getRouteById('exception', array('id' => $id));
-        $route->setArguments(array('id' => $id));
-        $route->setPredefinedArguments(array('report' => $report));
+        $route = $web->getRouterService()->getRouteById('exception.' . $locale->getCode());
+        if ($route === null) {
+            $route = $web->getRouterService()->getRouteById('exception', array('id' => $id));
+
+            $route->setArguments(array('id' => $id));
+            $route->setPredefinedArguments(array('report' => $report));
+        }
 
         $request = $web->createRequest($route->getPath(), 'GET');
         $request->setRoute($route);
