@@ -44,7 +44,7 @@ class ExceptionApplicationListener {
         // dispatch to the exception route
         $route = $web->getRouterService()->getRouteById('exception.' . $locale->getCode());
         if ($route === null) {
-            $route = $web->getRouterService()->getRouteById('exception', array('id' => $id));
+            $route = $web->getRouterService()->getRouteById('exception');
 
             $route->setArguments(array('id' => $id));
             $route->setPredefinedArguments(array('report' => $report));
@@ -53,12 +53,17 @@ class ExceptionApplicationListener {
         $request = $web->createRequest($route->getPath(), 'GET');
         $request->setRoute($route);
 
+        $statusCode = $response->getStatusCode();
+
+        $response->setOk();
         $response->setView(null);
         $response->removeHeader(Header::HEADER_CONTENT_TYPE);
         $response->clearRedirect();
 
         $dispatcher = $web->getDispatcher();
         $dispatcher->dispatch($request, $response);
+
+        $response->setStatusCode($statusCode);
 
         if ($web->getState() == WebApplication::STATE_RESPONSE) {
             // exception occured while rendering the template, trigger the pre
