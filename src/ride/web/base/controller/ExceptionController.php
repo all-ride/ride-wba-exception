@@ -2,11 +2,11 @@
 
 namespace ride\web\base\controller;
 
-use ride\library\mail\transport\Transport;
-use ride\library\system\System;
+use ride\library\validation\exception\ValidationException;
+
+use ride\service\ExceptionService;
 
 use ride\web\base\menu\Taskbar;
-use ride\web\base\service\ExceptionService;
 
 use \Exception;
 
@@ -20,7 +20,7 @@ class ExceptionController extends AbstractController {
      * Action to ask for extra information and to send the error report
      * @return null
      */
-    public function indexAction(System $system, ExceptionService $service, Transport $transport, $id, $report = null) {
+    public function indexAction(ExceptionService $service, $id, $report = null) {
         if ($report === null) {
             $report = $service->getReport($id);
         }
@@ -38,23 +38,7 @@ class ExceptionController extends AbstractController {
 
             $data = $form->getData();
 
-            if ($data['comment']) {
-                $service->updateReport($id, $data['comment']);
-
-                $body = "User's comment: " . $data['comment'] . "\n\n" . $report;
-            } else {
-                $body = $report;
-            }
-
-            $recipient = $service->getRecipient();
-            if ($recipient) {
-                $mail = $transport->createMessage();
-                $mail->setTo($recipient);
-                $mail->setSubject($service->getSubject());
-                $mail->setMessage($report);
-
-                $transport->send($mail);
-            }
+            $service->updateReport($id, $data['comment']);
 
             $this->addSuccess('success.exception.report.sent');
 

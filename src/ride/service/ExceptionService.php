@@ -1,9 +1,10 @@
 <?php
 
-namespace ride\web\base\service;
+namespace ride\service;
 
 use ride\library\http\Request;
 use ride\library\log\Log;
+use ride\library\mail\transport\Transport;
 use ride\library\security\model\User;
 use ride\library\system\file\File;
 use ride\library\validation\exception\ValidationException;
@@ -23,10 +24,28 @@ class ExceptionService {
     protected $log;
 
     /**
+     * Instance of the incoming request
+     * @var \ride\library\http\Request
+     */
+    protected $request;
+
+    /**
+     * Instance of the current user
+     * @var \ride\library\security\model\User
+     */
+    protected $user;
+
+    /**
      * Directory to write the error reports to
      * @var \ride\library\system\file\File
      */
     protected $directory;
+
+    /**
+     * Instance of the mail transport
+     * @var \ride\library\mail\transport\Transport
+     */
+    protected $transport;
 
     /**
      * Recipient for the report mails
@@ -50,12 +69,39 @@ class ExceptionService {
     }
 
     /**
+     * Sets the instance of the incoming request
+     * @param \ride\library\http\Request
+     * @return null
+     */
+    public function setRequest(Request $request) {
+        $this->request = $request;
+    }
+
+    /**
+     * Sets the instance of the current user
+     * @param \ride\library\security\model\User
+     * @return null
+     */
+    public function setUser(User $user) {
+        $this->user = $user;
+    }
+
+    /**
      * Sets the directory to write the reports to
      * @param \ride\library\system\file\File
      * @return null
      */
     public function setDirectory(File $directory) {
         $this->directory = $directory;
+    }
+
+    /**
+     * Sets the instance of the mail transport
+     * @param \ride\library\mail\transport\Transport $transport
+     * @return null
+     */
+    public function setTransport(Transport $transport) {
+        $this->transport = $transport;
     }
 
     /**
@@ -93,15 +139,30 @@ class ExceptionService {
     }
 
     /**
+     * Logs an exception to a report file
+     * @param \Exception $exception Instance of the exception
+     * @return string Id of the report
+     */
+    public function sendReport(Exception $exception) {
+        $report = $this->createReport($exception, $this->request, $this->user);
+
+        $id = $this->writeReport($report);
+
+        $this->mailReport($id, $report);
+
+        return $id;
+    }
+
+    /**
      * Gets a plain text error report for the provided exception
-     * @param Exception $exception Occured exception parsed into an array
+     * @param Exception $exception Instance of the exception
      * @param \ride\library\http\Request $request Request where the exception
      * occured
      * @param \ride\library\security\model\User $user Current user
      * @return string Plain text error report
      * @see getExceptionArray
      */
-    public function createReport(Exception $exception, Request $request = null, User $user = null) {
+    protected function createReport(Exception $exception, Request $request = null, User $user = null) {
         $exception = $this->getExceptionArray($exception);
 
         $report = 'Date: ' . date('d/m/Y H:i:s', time()) . "\n";
@@ -118,7 +179,11 @@ class ExceptionService {
                     $report .= "\nSession (" . $session->getId() . "):\n";
 
                     foreach ($sessionVariables as $key => $value) {
-                        $report .= $key . ': ' . var_export($value, true) . "\n";
+                        if (is_object($value)) {
+                            $report .= $key . ': ' . get_class($value) . "\n";
+                        } else {
+                            $report .= $key . ': ' . var_export($value, true) . "\n";
+                        }
                     }
                 }
             }
@@ -146,7 +211,7 @@ class ExceptionService {
      * @param string $report Report to write
      * @return string Id of the request/error
      */
-    public function writeReport($report) {
+    protected function writeReport($report) {
         if ($this->log) {
             $id = $this->log->getId();
         } else {
@@ -157,6 +222,49 @@ class ExceptionService {
         $file->write($report);
 
         return $id;
+    }
+
+    /**
+     * Updates a report
+     * @param string $id Id of the report
+     * @param string $comment Comment to add
+     * @return string|null
+     */
+    public function updateReport($id, $comment) {
+        $file = $this->getReportFile($id);
+        if (!$file->exists() || !$comment) {
+            return null;
+        }
+
+        $report = $file->read();
+        $report = 'Date: ' . date('d/m/Y H:i:s', time()) . "\nComment: " . $comment . "\n\n----------\n\n" . $report;
+
+        $file->write($report);
+
+        $this->mailReport($id, $report);
+    }
+
+    /**
+     * Mails the provided report to the configured recipient
+     * @param string $id Id of the error report
+     * @param string $report Full report to mail
+     * @return boolean True when succesfully mailed, false otherwise
+     */
+    protected function mailReport($id, $report) {
+        $recipient = $this->getRecipient();
+        if (!$recipient || !$this->transport) {
+            return false;
+        }
+
+        $subject = $this->getSubject();
+        $subject = str_replace('%id%', $id, $subject);
+
+        $mail = $this->transport->createMessage();
+        $mail->setTo($recipient);
+        $mail->setSubject($subject);
+        $mail->setMessage($report);
+
+        return $this->transport->send($mail);
     }
 
     /**
@@ -171,24 +279,6 @@ class ExceptionService {
         }
 
         return $file->read();
-    }
-
-    /**
-     * Updates a report
-     * @param string $id Id of the report
-     * @param string $comment Comment to add
-     * @return string|null
-     */
-    public function updateReport($id, $comment) {
-        $file = $this->getReportFile($id);
-        if (!$file->exists()) {
-            return null;
-        }
-
-        $report = $file->read();
-        $report = 'Date: ' . date('d/m/Y H:i:s', time()) . "\nComment: " . $comment . "\n\n----------\n\n" . $report;
-
-        $file->write($report);
     }
 
     /**
