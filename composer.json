@@ -23,8 +23,8 @@
     },
     "autoload": {
         "psr-0": {
+            "ride\\service\\ExceptionService": ["src/"],
             "ride\\web\\base\\controller\\ExceptionController": ["src/"],
-            "ride\\web\\base\\service\\ExceptionService": ["src/"],
             "ride\\web\\base\\ExceptionApplicationListener": ["src/"]
         }
     }

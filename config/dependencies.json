@@ -20,9 +20,24 @@
             ]
         },
         {
-            "class": "ride\\web\\base\\service\\ExceptionService",
+            "class": "ride\\service\\ExceptionService",
             "calls": [
                 "setLog",
+                "setRequest",
+                "setTransport",
+                {
+                    "method": "setUser",
+                    "arguments": [
+                        {
+                            "name": "user",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\library\\security\\SecurityManager",
+                                "method": "getUser"
+                            }
+                        }
+                    ]
+                },
                 {
                     "method": "setDirectory",
                     "arguments": [
@@ -56,14 +71,13 @@
                             "type": "parameter",
                             "properties": {
                                 "key": "system.exception.subject",
-                                "default": "An error occured"
+                                "default": "Ride | a whoopsie occured (%id%)"
                             }
                         }
                     ]
                 }
             ]
         },
-
         {
             "class": "ride\\web\\base\\menu\\MenuItem",
             "id": "system.exception",

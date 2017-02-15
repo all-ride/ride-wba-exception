@@ -7,9 +7,9 @@ use ride\library\event\EventManager;
 use ride\library\http\Header;
 use ride\library\i18n\I18n;
 use ride\library\security\exception\UnauthorizedException;
-use ride\library\security\SecurityManager;
 
-use ride\web\base\service\ExceptionService;
+use ride\service\ExceptionService;
+
 use ride\web\WebApplication;
 
 /**
@@ -21,10 +21,12 @@ class ExceptionApplicationListener {
     /**
      * Handle a exception, redirect to the error report form
      * @param \ride\library\event\Event $event
-     * @param \ride\library\security\SecurityManager $securityManager
+     * @param \ride\service\ExceptionService $service
+     * @param \ride\library\event\EventManager $eventManager
+     * @param \ride\library\i18n\I18n $i18n
      * @return null
      */
-    public function handleException(Event $event, ExceptionService $service, SecurityManager $securityManager, EventManager $eventManager, I18n $i18n) {
+    public function handleException(Event $event, ExceptionService $service, EventManager $eventManager, I18n $i18n) {
         $exception = $event->getArgument('exception');
         if ($exception instanceof UnauthorizedException) {
             return;
@@ -35,11 +37,9 @@ class ExceptionApplicationListener {
         $request = $web->getRequest();
         $response = $web->getResponse();
         $locale = $i18n->getLocale();
-        $user = $securityManager->getUser();
 
-        // write report
-        $report = $service->createReport($exception, $request, $user);
-        $id = $service->writeReport($report);
+        // write and mail report
+        $id = $service->sendReport($exception);
 
         // dispatch to the exception route
         $route = $web->getRouterService()->getRouteById('exception.' . $locale->getCode());
@@ -47,7 +47,6 @@ class ExceptionApplicationListener {
             $route = $web->getRouterService()->getRouteById('exception');
 
             $route->setArguments(array('id' => $id));
-            $route->setPredefinedArguments(array('report' => $report));
         }
 
         $request = $web->createRequest($route->getPath(), 'GET');
