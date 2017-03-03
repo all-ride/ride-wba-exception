@@ -54,6 +54,8 @@ class ExceptionController extends AbstractController {
         ));
 
         $form->processView($view);
+
+        $this->response->setHeader('X-Ride-ExceptionForm', 'true');
     }
 
     /**
