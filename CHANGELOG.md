@@ -1,5 +1,9 @@
 # ride-wba-exception
 
+## [2.1.0]
+### Updated
+- added X-Ride-ExceptionForm header when the exception form is rendered
+
 ## [2.0.0]
 ### Updated
 - moved ExceptionService to ride\service namespace
