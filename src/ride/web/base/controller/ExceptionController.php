@@ -40,9 +40,22 @@ class ExceptionController extends AbstractController {
 
             $service->updateReport($id, $data['comment']);
 
-            $this->addSuccess('success.exception.report.sent');
+            $routeId = $this->getConfig()->get('system.exception.finish.' . $this->getLocale());
+            if (!$routeId) {
+                $routeId = $this->getConfig()->get('system.exception.finish');
+            }
 
-            $this->response->setRedirect($this->request->getBaseUrl());
+            if ($routeId) {
+                // thank you page set through parameters
+                $url = $this->getUrl($routeId);
+            } else {
+                // default message and back to the home page
+                $this->addSuccess('success.exception.report.sent');
+
+                $url = $this->request->getBaseUrl();
+            }
+
+            $this->response->setRedirect($url);
 
             return;
         }

@@ -8,6 +8,8 @@ This page will not have the error submission form.
 
 ## Parameters
 
+* __system.exception.finish.%locale%__: Route id for a localized finish/thank you page
+* __system.exception.finish__: Route id for the generic finish/thank you page
 * __system.exception.path__: Path to the directory where the error reports will be written. (defaults to application/data/log/exception)
 * __system.exception.recipient__: Email address of the recipient for the error reporting mails
 * __system.exception.subject__: Subject for the error reporting mails. You can use the _%id%_ variable for the id of the error report.
