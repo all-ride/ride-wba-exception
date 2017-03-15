@@ -1,5 +1,9 @@
 # ride-wba-exception
 
+## [2.2.1] - 2017-03-15
+### Updated
+- allow null user to be set
+
 ## [2.2.0] - 2017-03-14
 ### Added
 - added parameter to setup a finish/thank you page
