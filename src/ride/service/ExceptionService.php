@@ -82,7 +82,7 @@ class ExceptionService {
      * @param \ride\library\security\model\User
      * @return null
      */
-    public function setUser(User $user) {
+    public function setUser(User $user = null) {
         $this->user = $user;
     }
 
