@@ -1,5 +1,9 @@
 # ride-wba-exception
 
+## [2.2.2] - 2017-03-30
+### Updated
+- support for multiple recipients
+
 ## [2.2.1] - 2017-03-15
 ### Updated
 - allow null user to be set
