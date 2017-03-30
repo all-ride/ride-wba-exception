@@ -26,6 +26,7 @@ class ExceptionController extends AbstractController {
         }
 
         $form = $this->createFormBuilder();
+        $form->setAction('exception');
         $form->addRow('comment', 'text', array(
             'filters' => array(
                 'trim' => array(),
@@ -80,16 +81,23 @@ class ExceptionController extends AbstractController {
         $translator = $this->getTranslator();
         $referer = $this->getReferer();
 
+        $recipients = $config->get('system.exception.recipient');
+        if (!is_array($recipients)) {
+            $recipients = array($recipients);
+        }
+
         // build the form
         $data = array(
-            'recipient' => $config->get('system.exception.recipient'),
+            'recipient' => $recipients,
             'subject' => $config->get('system.exception.subject'),
         );
 
         $form = $this->createFormBuilder($data);
-        $form->addRow('recipient', 'email', array(
+        $form->setAction('system.exception');
+        $form->addRow('recipient', 'collection', array(
             'label' => $translator->translate('label.recipient'),
             'description' => $translator->translate('label.recipient.exception.description'),
+            'type' => 'email',
             'filters' => array(
                 'trim' => array(),
             )
