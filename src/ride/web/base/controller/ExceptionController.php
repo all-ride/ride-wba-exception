@@ -21,8 +21,23 @@ class ExceptionController extends AbstractController {
      * @return null
      */
     public function indexAction(ExceptionService $service, $id, $report = null) {
+        $config = $this->getConfig();
+
         if ($report === null) {
             $report = $service->getReport($id);
+        }
+
+        $useForm = $config->get('system.exception.form', true);
+        if (!$useForm) {
+            $this->setTemplateView('base/exception', array(
+                'id' => $id,
+                'report' => $report,
+                'form' => null,
+            ));
+
+            $this->response->setHeader('X-Ride-ExceptionForm', 'true');
+
+            return;
         }
 
         $form = $this->createFormBuilder();
@@ -41,20 +56,15 @@ class ExceptionController extends AbstractController {
 
             $service->updateReport($id, $data['comment']);
 
-            $routeId = $this->getConfig()->get('system.exception.finish.' . $this->getLocale());
+            $routeId = $config->get('system.exception.finish.' . $this->getLocale());
             if (!$routeId) {
-                $routeId = $this->getConfig()->get('system.exception.finish');
+                $routeId = $config->get('system.exception.finish');
+                if (!$routeId) {
+                    $routeId = 'exception.finish';
+                }
             }
 
-            if ($routeId) {
-                // thank you page set through parameters
-                $url = $this->getUrl($routeId);
-            } else {
-                // default message and back to the home page
-                $this->addSuccess('success.exception.report.sent');
-
-                $url = $this->request->getBaseUrl();
-            }
+            $url = $this->getUrl($routeId);
 
             $this->response->setRedirect($url);
 
@@ -70,6 +80,14 @@ class ExceptionController extends AbstractController {
         $form->processView($view);
 
         $this->response->setHeader('X-Ride-ExceptionForm', 'true');
+    }
+
+    /**
+     * Action to show a confirmation page
+     * @return null
+     */
+    public function finishAction() {
+        $this->setTemplateView('base/exception.finish');
     }
 
     /**
