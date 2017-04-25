@@ -1,5 +1,6 @@
 system.exception.finish.%locale%    Route id for a localized finish/thank you page
 system.exception.finish             Route id for the generic finish/thank you page
+system.exception.form               Set to false to omit the comment form
 system.exception.path               Directory where the error reports will be written
 system.exception.recipient          Recipient for the error reporting mails
 system.exception.subject            Subject for the error reporting mails

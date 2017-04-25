@@ -1,5 +1,10 @@
 # ride-wba-exception
 
+## [2.3.0] - 2017-04-04
+### Added
+- system.exception.form parameter to disable the comment form
+- exception.finish route for a default finish/thank you page
+
 ## [2.2.2] - 2017-03-30
 ### Updated
 - support for multiple recipients

@@ -8,6 +8,13 @@
             "methods": ["GET", "HEAD", "POST"]
         },
         {
+            "path": "/exception/confirmed",
+            "controller": "ride\\web\\base\\controller\\ExceptionController",
+            "action": "finishAction",
+            "id": "exception.finish",
+            "methods": ["GET", "HEAD"]
+        },
+        {
             "path": "/admin/system/exception",
             "controller": "ride\\web\\base\\controller\\ExceptionController",
             "action": "settingsAction",
