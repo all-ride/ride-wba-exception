@@ -1,3 +1,8 @@
 {
-    "success.exception.report.sent": "Hartelijk dank voor het sturen van uw foutrapport"
+    "label.recipient": "Ontvanger",
+    "label.recipient.exception.description": "E-mailadres van de ontvanger voor de mails met de foutenrapporten",
+    "label.subject": "Onderwerp",
+    "label.subject.exception.description": "Onderwerp voor de mails met de foutenrapporten",
+    "success.exception.report.sent": "Hartelijk dank voor het sturen van uw foutrapport",
+    "title.system.exception": "Foutenrapportering"
 }
