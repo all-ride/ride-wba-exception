@@ -5,7 +5,7 @@ namespace ride\service;
 use ride\library\http\Request;
 use ride\library\log\Log;
 use ride\library\mail\transport\Transport;
-use ride\library\security\model\User;
+use ride\library\security\SecurityManager;
 use ride\library\system\file\File;
 use ride\library\validation\exception\ValidationException;
 use ride\library\StringHelper;
@@ -82,8 +82,12 @@ class ExceptionService {
      * @param \ride\library\security\model\User
      * @return null
      */
-    public function setUser(User $user = null) {
-        $this->user = $user;
+    public function setSecurityManager(SecurityManager $securityManager) {
+        try {
+            $this->user = $securityManager->getUser();
+        } catch (Exception $exception) {
+            $this->user = null;
+        }
     }
 
     /**

@@ -1,5 +1,8 @@
 # ride-wba-exception
 
+## [2.4.1] - 2018-04-20
+- catch exception when retrieving user
+
 ## [2.4.0] - 2018-04-13
 ### Added
 - added dutch translations

@@ -25,19 +25,7 @@
                 "setLog",
                 "setRequest",
                 "setTransport",
-                {
-                    "method": "setUser",
-                    "arguments": [
-                        {
-                            "name": "user",
-                            "type": "call",
-                            "properties": {
-                                "interface": "ride\\library\\security\\SecurityManager",
-                                "method": "getUser"
-                            }
-                        }
-                    ]
-                },
+                "setSecurityManager",
                 {
                     "method": "setDirectory",
                     "arguments": [
