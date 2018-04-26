@@ -5,6 +5,7 @@ namespace ride\service;
 use ride\library\http\Request;
 use ride\library\log\Log;
 use ride\library\mail\transport\Transport;
+use ride\library\security\model\User;
 use ride\library\security\SecurityManager;
 use ride\library\system\file\File;
 use ride\library\validation\exception\ValidationException;
